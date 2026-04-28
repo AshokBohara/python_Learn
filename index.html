@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PU-SOE AI Chatbot - Pokhara University School of Engineering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .chatbot-container {
+            flex: 1;
+            min-width: 400px;
+            height: 700px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            background: white;
+            overflow: hidden;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .chatbot-header h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.5em;
+        }
+
+        .chatbot-header p {
+            margin: 0;
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .university-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.8em;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            word-wrap: break-word;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.2);
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .message-time {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .confidence {
+            display: block;
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            margin: 0 3px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        .suggestions {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        .suggestions h4 {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .suggestion-btn {
+            background: #e8eaf6;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 18px;
+            margin: 5px;
+            font-size: 0.9em;
+            color: #1a237e;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .suggestion-btn:hover {
+            background: #c5cae9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .quick-questions {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .quick-questions h4 {
+            color: #666;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .quick-btn {
+            background: white;
+            border: 2px solid #1a237e;
+            border-radius: 25px;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 0.9em;
+            color: #1a237e;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .quick-btn:hover {
+            background: #1a237e;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.3);
+        }
+
+        .input-area {
+            display: flex;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            background: white;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            outline: none;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: #1a237e;
+        }
+
+        .input-area button {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 15px 30px;
+            margin-left: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .input-area button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 35, 126, 0.3);
+        }
+
+        .input-area button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-panel {
+            flex: 0.6;
+            min-width: 300px;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-panel h3 {
+            color: #1a237e;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.4em;
+        }
+
+        .faq-section {
+            margin-bottom: 25px;
+        }
+
+        .faq-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8eaf6;
+            font-size: 1.1em;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #1a237e;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .faq-item:hover {
+            background: #e8eaf6;
+            transform: translateX(5px);
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .faq-answer {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .stats {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: auto;
+        }
+
+        .stats h4 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4caf50;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .chatbot-container, .info-panel {
+                min-width: 100%;
+                height: 600px;
+            }
+        }
+
+        .welcome-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chatbot-container" id="chatbotContainer">
+            <div class="chatbot-header">
+                <div class="university-logo">🏫</div>
+                <h2>Pokhara University School of Engineering</h2>
+                <p>AI-Powered Student Enquiry System</p>
+                <div class="welcome-badge">24/7 Active</div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <div class="message-content">
+                        Hello! I'm PU-SOE Assistant 🤖<br><br>
+                        I can help you with:<br>
+                        • Admissions & Eligibility<br>
+                        • Fee Structure & Scholarships<br>
+                        • Engineering Programs<br>
+                        • Campus Facilities<br>
+                        • Contact Information<br><br>
+                        How can I assist you today?
+                        <span class="message-time">Just now</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="suggestions" id="suggestions">
+                <h4>Quick Suggestions:</h4>
+                <!-- Suggestions will be dynamically added -->
+            </div>
+
+            <div class="quick-questions">
+                <h4>Frequent Questions:</h4>
+                <button class="quick-btn" onclick="sendQuickQuestion('What are the admission requirements?')">Admission Requirements</button>
+                <button class="quick-btn" onclick="sendQuickQuestion('What is the fee structure?')">Fee Structure</button>
+                <button class="quick-btn" onclick="sendQuickQuestion('Which engineering programs are offered?')">Engineering Programs</button>
+                <button class="quick-btn" onclick="sendQuickQuestion('Where is the campus located?')">Campus Location</button>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Ask about admissions, fees, courses, facilities..." onkeypress="handleKeyPress(event)">
+                <button id="sendButton" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>PU-SOE Information Hub</h3>
+            
+            <div class="faq-section">
+                <h4>📚 Admission FAQs</h4>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">What are the eligibility criteria?</div>
+                    <div class="faq-answer">Minimum 45% in +2/equivalent with Mathematics. Entrance exam must be cleared.</div>
+                </div>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">When does admission start?</div>
+                    <div class="faq-answer">Admissions open twice yearly: March-April and August-September.</div>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h4>💵 Fee Structure</h4>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">What is the total fee?</div>
+                    <div class="faq-answer">Computer: NPR 600,000 | Civil: NPR 550,000 | Electrical: NPR 570,000</div>
+                </div>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">Are scholarships available?</div>
+                    <div class="faq-answer">Yes, merit-based and need-based scholarships available for top performers.</div>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h4>🏛️ Campus Facilities</h4>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">What labs are available?</div>
+                    <div class="faq-answer">Computer, Electronics, Civil, Mechanical labs with modern equipment.</div>
+                </div>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <div class="faq-question">Hostel facilities?</div>
+                    <div class="faq-answer">Separate hostels for boys & girls with WiFi, cafeteria, and security.</div>
+                </div>
+            </div>
+
+            <div class="stats">
+                <h4>📊 Chatbot Statistics</h4>
+                <div class="stat-item">
+                    <span>Questions Answered:</span>
+                    <span id="statQuestions">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Response Accuracy:</span>
+                    <span id="statAccuracy">95%</span>
+                </div>
+                <div class="stat-item">
+                    <span>Active Users:</span>
+                    <span id="statUsers">1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==============================
+        // PU-SOE CHATBOT ENGINE
+        // ==============================
+
+        // Knowledge Base for Pokhara University School of Engineering
+        const knowledgeBase = {
+            greetings: {
+                patterns: ["hello", "hi", "hey", "greetings", "good morning", "good afternoon", "good evening"],
+                responses: [
+                    "Hello! Welcome to Pokhara University School of Engineering. How can I assist you today?",
+                    "Hi there! I'm PU-SOE Assistant. What information do you need?",
+                    "Greetings! How can I help with your PU-SOE enquiry?"
+                ]
+            },
+            admissions: {
+                patterns: ["admission", "admit", "apply", "application", "eligibility", "requirements", "how to join", "entrance", "criteria"],
+                responses: [
+                    "🎓 <b>Admission Requirements for PU-SOE:</b><br><br>" +
+                    "• Minimum 45% in +2 or equivalent<br>" +
+                    "• Must have studied Mathematics in +2<br>" +
+                    "• Pass PU-SOE entrance examination<br>" +
+                    "• Submit original documents (Marksheet, Character Certificate, Citizenship)<br>" +
+                    "• Application deadline: August 30<br>" +
+                    "• Interview: September 1-5<br><br>" +
+                    "📝 Apply online at: <a href='https://www.pusoe.edu.np/apply' target='_blank'>www.pusoe.edu.np/apply</a>"
+                ],
+                related: ["What is the fee structure?", "When do classes start?", "Is there an entrance exam?", "Required documents?"]
+            },
+            fees: {
+                patterns: ["fee", "tuition", "cost", "payment", "scholarship", "price", "how much", "installment", "financial"],
+                responses: [
+                    "💰 <b>Fee Structure (Total Program Fee):</b><br><br>" +
+                    "• B.E. Computer Engineering: NPR 600,000<br>" +
+                    "• B.E. Civil Engineering: NPR 550,000<br>" +
+                    "• B.E. Electrical Engineering: NPR 570,000<br>" +
+                    "• B.E. Electronics & Communication: NPR 590,000<br>" +
+                    "• B.E. Mechanical Engineering: NPR 560,000<br><br>" +
+                    "💳 <b>Payment Schedule:</b><br>" +
+                    "• 30% on admission<br>" +
+                    "• 40% in 2nd year<br>" +
+                    "• 30% in 3rd year<br><br>" +
+                    "🎖️ <b>Scholarships:</b><br>" +
+                    "• Top 5%: 100% tuition waiver<br>" +
+                    "• Top 10%: 50% tuition waiver<br>" +
+                    "• Need-based scholarships available"
+                ],
+                related: ["What is the payment schedule?", "Are there hostel fees?", "Financial aid options?", "Late fee policy?"]
+            },
+            courses: {
+                patterns: ["course", "program", "branch", "study", "engineering", "degree", "curriculum", "subject", "syllabus"],
+                responses: [
+                    "📚 <b>Engineering Programs Offered:</b><br><br>" +
+                    "1. <b>B.E. Computer Engineering</b> (4 years, 8 semesters)<br>" +
+                    "   - Seats: 48<br>" +
+                    "   - Focus: AI, ML, Software Engineering<br><br>" +
+                    "2. <b>B.E. Civil Engineering</b> (4 years, 8 semesters)<br>" +
+                    "   - Seats: 48<br>" +
+                    "   - Focus: Structural, Environmental<br><br>" +
+                    "3. <b>B.E. Electrical Engineering</b> (4 years, 8 semesters)<br>" +
+                    "   - Seats: 48<br>" +
+                    "   - Focus: Power Systems, Control<br><br>" +
+                    "4. <b>B.E. Electronics & Communication</b> (4 years, 8 semesters)<br>" +
+                    "   - Seats: 48<br>" +
+                    "   - Focus: VLSI, Communication Systems<br><br>" +
+                    "5. <b>B.E. Mechanical Engineering</b> (4 years, 8 semesters)<br>" +
+                    "   - Seats: 48<br>" +
+                    "   - Focus: Design, Manufacturing<br><br>" +
+                    "🎯 All programs are affiliated with Pokhara University"
+                ],
+                related: ["Which program is most popular?", "Internship opportunities?", "Placement records?", "Elective subjects?"]
+            },
+            facilities: {
+                patterns: ["facility", "lab", "library", "hostel", "sports", "campus", "infrastructure", "wifi", "laboratory", "gym"],
+                responses: [
+                    "🏛️ <b>Campus Facilities:</b><br><br>" +
+                    "🔬 <b>Laboratories:</b><br>" +
+                    "• Computer Lab (50+ PCs)<br>" +
+                    "• Electronics Lab (Oscilloscopes, Function Generators)<br>" +
+                    "• Civil Engineering Lab (Testing Equipment)<br>" +
+                    "• Mechanical Workshop (Lathe, CNC)<br><br>" +
+                    "📚 <b>Library:</b><br>" +
+                    "• 25,000+ books<br>" +
+                    "• E-resources (IEEE, Springer)<br>" +
+                    "• Reading rooms (Capacity: 200)<br>" +
+                    "• Open: 7 AM - 8 PM<br><br>" +
+                    "🏠 <b>Hostels:</b><br>" +
+                    "• Separate for boys/girls<br>" +
+                    "• WiFi, Study rooms<br>" +
+                    "• Cafeteria (Vegetarian/Non-vegetarian)<br>" +
+                    "• Security 24/7<br><br>" +
+                    "⚽ <b>Sports:</b><br>" +
+                    "• Basketball court<br>" +
+                    "• Volleyball court<br>" +
+                    "• Football ground<br>" +
+                    "• Table tennis<br><br>" +
+                    "🏥 <b>Other:</b> Medical facility, Cafeteria, Parking, Auditorium"
+                ],
+                related: ["Hostel fees?", "Library timings?", "Sports equipment available?", "Computer lab specifications?"]
+            },
+            location: {
+                patterns: ["location", "address", "where", "campus", "place", "map", "directions", "reach", "distance"],
+                responses: [
+                    "📍 <b>PU-SOE Campus Location:</b><br><br>" +
+                    "🏫 <b>Pokhara University School of Engineering</b><br>" +
+                    "📌 Khudi, Dhungepatan, Pokhara, Nepal<br>" +
+                    "🗺️ GPS Coordinates: 28.2036° N, 83.9858° E<br><br>" +
+                    "🚗 <b>How to Reach:</b><br>" +
+                    "• From Pokhara Airport: 15 km (30 min)<br>" +
+                    "• From Pokhara Bus Park: 12 km (25 min)<br>" +
+                    "• From Lakeside: 10 km (20 min)<br><br>" +
+                    "📞 <b>Contact:</b><br>" +
+                    "• Phone: +977-61-504045<br>" +
+                    "• Email: info@pusoe.edu.np<br>" +
+                    "• Website: <a href='https://www.pusoe.edu.np' target='_blank'>www.pusoe.edu.np</a><br>" +
+                    "• Map: <a href='https://maps.google.com/?q=28.2036,83.9858' target='_blank'>View on Google Maps</a>"
+                ],
+                related: ["How to reach campus?", "Nearest bus stop?", "Parking available?", "Visiting hours?"]
+            },
+            contact: {
+                patterns: ["contact", "email", "phone", "number", "reach", "talk", "office", "dean", "principal", "department"],
+                responses: [
+                    "📞 <b>Contact Information:</b><br><br>" +
+                    "🏫 <b>Main Office:</b><br>" +
+                    "• Phone: +977-61-504045<br>" +
+                    "• Email: info@pusoe.edu.np<br>" +
+                    "• Fax: +977-61-504044<br><br>" +
+                    "🎓 <b>Admission Office:</b><br>" +
+                    "• Phone: +977-61-504046<br>" +
+                    "• Email: admission@pusoe.edu.np<br>" +
+                    "• WhatsApp: +977-9800000000<br><br>" +
+                    "💼 <b>Accounts Office:</b><br>" +
+                    "• Phone: +977-61-504047<br>" +
+                    "• Email: accounts@pusoe.edu.np<br><br>" +
+                    "🏠 <b>Hostel Office:</b><br>" +
+                    "• Phone: +977-61-504048<br>" +
+                    "• Email: hostel@pusoe.edu.np<br><br>" +
+                    "⏰ <b>Office Hours:</b><br>" +
+                    "• Sunday-Friday: 9 AM - 5 PM<br>" +
+                    "• Saturday: 10 AM - 2 PM<br>" +
+                    "• Holidays: Public holidays"
+                ],
+                related: ["WhatsApp contact?", "Admission counselor?", "Library contact?", "Department heads?"]
+            },
+            thanks: {
+                patterns: ["thank", "thanks", "appreciate", "grateful", "helpful", "thank you"],
+                responses: [
+                    "You're welcome! Feel free to ask if you have more questions about PU-SOE.",
+                    "Glad I could help! Let me know if you need more information.",
+                    "Happy to assist! All the best for your engineering journey at PU-SOE! 🎓",
+                    "My pleasure! Good luck with your admission process. 🍀"
+                ]
+            }
+        };
+
+        // ==============================
+        // CHATBOT STATE MANAGEMENT
+        // ==============================
+        let chatHistory = [];
+        let questionCount = 0;
+        let userSession = {
+            userId: 'user_' + Math.random().toString(36).substr(2, 9),
+            startTime: new Date(),
+            questions: []
+        };
+
+        // ==============================
+        // INITIALIZATION
+        // ==============================
+        function initChatbot() {
+            console.log('🚀 PU-SOE Chatbot Initialized');
+            console.log('📊 Session ID:', userSession.userId);
+            
+            updateStats();
+            showSuggestions(['Admission requirements', 'Fee structure details', 'Available programs', 'Campus location']);
+            
+            // Load from localStorage if available
+            loadFromStorage();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveToStorage, 30000);
+        }
+
+        // ==============================
+        // MESSAGE HANDLING
+        // ==============================
+        function sendMessage() {
+            const inputField = document.getElementById('userInput');
+            const message = inputField.value.trim();
+            
+            if (message === '') return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            inputField.value = '';
+            
+            // Disable send button while processing
+            document.getElementById('sendButton').disabled = true;
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Process message after delay (simulating AI processing)
+            setTimeout(() => {
+                const response = processMessage(message);
+                addMessage(response.text, 'bot', response.confidence, response.category);
+                showSuggestions(response.related);
+                updateStats();
+                
+                // Re-enable send button
+                document.getElementById('sendButton').disabled = false;
+                
+                // Save to history
+                saveToHistory(message, response);
+                
+                // Auto-scroll to bottom
+                scrollToBottom();
+            }, 800 + Math.random() * 800);
+        }
+
+        function sendQuickQuestion(question) {
+            document.getElementById('userInput').value = question;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // ==============================
+        // AI PROCESSING ENGINE
+        // ==============================
+        function processMessage(message) {
+            const lowerMessage = message.toLowerCase();
+            let category = 'general';
+            let confidence = 0.8;
+            let responseText = '';
+            let relatedQuestions = [];
+            
+            // Increment question counter
+            questionCount++;
+            userSession.questions.push({
+                question: message,
+                time: new Date().toISOString()
+            });
+            
+            // Check for exact matches first
+            const exactMatches = {
+                "what are the admission requirements?": "admissions",
+                "what is the fee structure?": "fees",
+                "which engineering programs are offered?": "courses",
+                "where is the campus located?": "location",
+                "what facilities are available?": "facilities",
+                "how can i contact?": "contact"
+            };
+            
+            if (exactMatches[lowerMessage]) {
+                category = exactMatches[lowerMessage];
+                confidence = 0.95;
+            } else {
+                // Pattern matching
+                for (const [cat, data] of Object.entries(knowledgeBase)) {
+                    for (const pattern of data.patterns) {
+                        if (lowerMessage.includes(pattern)) {
+                            category = cat;
+                            confidence = Math.min(0.9 + (Math.random() * 0.1), 0.98);
+                            break;
+                        }
+                    }
+                    if (category !== 'general') break;
+                }
+            }
+            
+            // Get response based on category
+            if (category !== 'general' && knowledgeBase[category]) {
+                const responses = knowledgeBase[category].responses;
+                responseText = responses[Math.floor(Math.random() * responses.length)];
+                relatedQuestions = knowledgeBase[category].related || [];
+            } else {
+                // Default response for unknown questions
+                responseText = "🤔 <b>I'm still learning about PU-SOE!</b><br><br>" +
+                              "I can help you with:<br>" +
+                              "✅ <b>Admissions:</b> Requirements, deadlines, documents<br>" +
+                              "✅ <b>Fees:</b> Structure, scholarships, payment<br>" +
+                              "✅ <b>Programs:</b> Computer, Civil, Electrical, Electronics, Mechanical<br>" +
+                              "✅ <b>Facilities:</b> Labs, library, hostel, sports<br>" +
+                              "✅ <b>Location:</b> Campus address, how to reach<br><br>" +
+                              "📧 For specific queries: <a href='mailto:info@pusoe.edu.np'>info@pusoe.edu.np</a>";
+                confidence = 0.3;
+                relatedQuestions = ['Admission requirements', 'Fee structure', 'Engineering programs'];
+            }
+            
+            return {
+                text: responseText,
+                confidence: confidence,
+                category: category,
+                related: relatedQuestions
+            };
+        }
+
+        // ==============================
+        // UI FUNCTIONS
+        // ==============================
+        function addMessage(text, sender, confidence = null, category = null) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Remove typing indicator if present
+            const typingIndicator = document.querySelector('.typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            let content = text;
+            if (confidence) {
+                const confidencePercent = Math.round(confidence * 100);
+                const confidenceColor = confidencePercent > 80 ? '#4CAF50' : 
+                                      confidencePercent > 60 ? '#FF9800' : '#F44336';
+                content += `<span class="confidence" style="color: ${confidenceColor}">Confidence: ${confidencePercent}%</span>`;
+            }
+            content += `<span class="message-time">${time}</span>`;
+            
+            messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+            chatMessages.appendChild(messageDiv);
+            
+            // Add to history
+            chatHistory.push({
+                text: text,
+                sender: sender,
+                time: time,
+                category: category,
+                confidence: confidence
+            });
+            
+            return messageDiv;
+        }
+
+        function showTypingIndicator() {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+            
+            chatMessages.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        function showSuggestions(questions) {
+            const suggestionsDiv = document.getElementById('suggestions');
+            suggestionsDiv.innerHTML = '<h4>💡 Quick Suggestions:</h4>';
+            
+            if (questions && questions.length > 0) {
+                questions.forEach(question => {
+                    const button = document.createElement('button');
+                    button.className = 'suggestion-btn';
+                    button.textContent = question;
+                    button.onclick = () => sendQuickQuestion(question);
+                    suggestionsDiv.appendChild(button);
+                });
+            } else {
+                suggestionsDiv.innerHTML = '<h4>💡 Ask about admissions, fees, or programs</h4>';
+            }
+        }
+
+        function scrollToBottom() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // ==============================
+        // FAQ FUNCTIONS
+        // ==============================
+        function toggleFAQ(element) {
+            element.classList.toggle('active');
+        }
+
+        // ==============================
+        // STATISTICS & STORAGE
+        // ==============================
+        function updateStats() {
+            document.getElementById('statQuestions').textContent = questionCount;
+            
+            // Calculate average confidence
+            const confidences = chatHistory
+                .filter(msg => msg.sender === 'bot' && msg.confidence)
+                .map(msg => msg.confidence);
+            const avgConfidence = confidences.length > 0 
+                ? Math.round((confidences.reduce((a, b) => a + b, 0) / confidences.length) * 100)
+                : 95;
+            document.getElementById('statAccuracy').textContent = avgConfidence + '%';
+            
+            // Simulate active users
+            const activeUsers = 1 + Math.floor(Math.random() * 5);
+            document.getElementById('statUsers').textContent = activeUsers;
+        }
+
+        function saveToHistory(question, response) {
+            const historyItem = {
+                timestamp: new Date().toISOString(),
+                question: question,
+                response: response.text,
+                category: response.category,
+                confidence: response.confidence
+            };
+            
+            // Keep last 100 messages
+            if (chatHistory.length > 100) {
+                chatHistory.shift();
+            }
+        }
+
+        function saveToStorage() {
+            const data = {
+                chatHistory: chatHistory,
+                questionCount: questionCount,
+                userSession: userSession,
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('pu-soe-chatbot-data', JSON.stringify(data));
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem('pu-soe-chatbot-data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    chatHistory = data.chatHistory || [];
+                    questionCount = data.questionCount || 0;
+                    userSession = data.userSession || userSession;
+                    
+                    // Restore chat history to UI
+                    if (chatHistory.length > 0) {
+                        const chatMessages = document.getElementById('chatMessages');
+                        chatMessages.innerHTML = ''; // Clear initial message
+                        
+                        chatHistory.forEach(msg => {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = `message ${msg.sender}`;
+                            messageDiv.innerHTML = `<div class="message-content">${msg.text}<span class="message-time">${msg.time}</span></div>`;
+                            chatMessages.appendChild(messageDiv);
+                        });
+                    }
+                    
+                    console.log('📂 Loaded saved data');
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+        }
+
+        // ==============================
+        // UTILITY FUNCTIONS
+        // ==============================
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            
+            switch(type) {
+                case 'success':
+                    notification.style.background = '#4CAF50';
+                    break;
+                case 'error':
+                    notification.style.background = '#F44336';
+                    break;
+                case 'warning':
+                    notification.style.background = '#FF9800';
+                    break;
+                default:
+                    notification.style.background = '#2196F3';
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function exportChat() {
+            const chatText = chatHistory.map(msg => 
+                `[${msg.time}] ${msg.sender.toUpperCase()}: ${msg.text.replace(/<[^>]*>/g, '')}`
+            ).join('\n\n');
+            
+            const blob = new Blob([chatText], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pu-soe-chat-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Chat exported successfully!', 'success');
+        }
+
+        function clearChat() {
+            if (confirm('Clear all chat history?')) {
+                chatHistory = [];
+                questionCount = 0;
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '';
+                
+                // Add initial message
+                addMessage("Hello! I'm PU-SOE Assistant 🤖<br><br>I can help you with:<br>• Admissions & Eligibility<br>• Fee Structure & Scholarships<br>• Engineering Programs<br>• Campus Facilities<br>• Contact Information<br><br>How can I assist you today?", 'bot');
+                
+                localStorage.removeItem('pu-soe-chatbot-data');
+                showNotification('Chat cleared!', 'success');
+            }
+        }
+
+        // ==============================
+        // KEYBOARD SHORTCUTS
+        // ==============================
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+E to export
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportChat();
+            }
+            
+            // Ctrl+L to clear
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                clearChat();
+            }
+            
+            // Esc to clear input
+            if (e.key === 'Escape') {
+                document.getElementById('userInput').value = '';
+            }
+            
+            // Ctrl+/ to focus input
+            if (e.ctrlKey && e.key === '/') {
+                e.preventDefault();
+                document.getElementById('userInput').focus();
+            }
+        });
+
+        // ==============================
+        // INITIALIZE ON LOAD
+        // ==============================
+        window.onload = function() {
+            initChatbot();
+            showNotification('🎓 PU-SOE Chatbot Ready! Ask about admissions, fees, or programs.', 'success');
+            
+            // Focus input field
+            setTimeout(() => {
+                document.getElementById('userInput').focus();
+            }, 500);
+            
+            // Add control buttons to header
+            const header = document.querySelector('.chatbot-header');
+            const controls = document.createElement('div');
+            controls.style.cssText = 'position: absolute; bottom: 10px; right: 20px; display: flex; gap: 10px;';
+            controls.innerHTML = `
+                <button onclick="exportChat()" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px;">Export</button>
+                <button onclick="clearChat()" style="background: #F44336; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px;">Clear</button>
+            `;
+            header.appendChild(controls);
+        };
+    </script>
+</body>
+</html>
